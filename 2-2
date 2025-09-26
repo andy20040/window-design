@@ -12,8 +12,8 @@ namespace F74111128_2_2
         static void Main(string[] args)
         {
             double money = 3000;
-            int time = 0, exit = 0, day = 1, prevday = 0,changeday=0,cantborrow=0;
-            int stock_num = 3, borrow = 0,nomoney=0;
+            int time = 0, exit = 0, day = 1, prevday = 0, changeday = 0, cantborrow = 0;
+            int stock_num = 3, borrow = 0, nomoney = 0;
             double extra = 0;
             string[] stock_names = { "台肌電", "肯德基", "我熱烈的吻" };
             double[] stock_price = { 1180, 144.58, 2 };
@@ -62,28 +62,34 @@ namespace F74111128_2_2
                 day = time / 3;
                 if (day > prevday)
                     changeday = 1;
-                if (changeday==1) {
-                        Console.WriteLine("------------------------------國際換日線---------------------------------");
-                        double pay = 0;
-                    for (int i = 0; i < stock_ids.Length; i++) {
-                        for (int j = 0; j < realownstock_tag.Count; j++) {
-                            if (realownstock_tag[j] == stock_ids[i]) {
-                                pay+=realownstock_num[j] * realownstock_price[j] * stock_dividents[i];
+                if (changeday == 1)
+                {
+                    Console.WriteLine("------------------------------國際換日線---------------------------------");
+                    double pay = 0;
+                    for (int i = 0; i < stock_ids.Length; i++)
+                    {
+                        for (int j = 0; j < realownstock_tag.Count; j++)
+                        {
+                            if (realownstock_tag[j] == stock_ids[i])
+                            {
+                                pay += realownstock_num[j] * realownstock_price[j] * stock_dividents[i];
                             }
                         }
-                    
+
                     }
-                    pay= Math.Round(pay,2);
+                    pay = Math.Round(pay, 2);
                     Console.WriteLine("收到股息金額: {0}", pay);
-                    extra = topay* 0.1;
-                    double remain = 0,truepay=topay*0.2;
-                    remain= money - extra - topay * 0.2;
-                    if (remain >= 0) {
+                    extra = topay * 0.1;
+                    double remain = 0, truepay = topay * 0.2;
+                    remain = money - extra - topay * 0.2;
+                    if (remain >= 0)
+                    {
                         topay *= 0.8;
                         money = remain;
-                        Console.WriteLine("貸款還了 {0}, 利息 {1}, 尚餘 {2}", truepay, extra,topay);
+                        Console.WriteLine("貸款還了 {0}, 利息 {1}, 尚餘 {2}", truepay, extra, topay);
                     }
-                    else {
+                    else
+                    {
                         money = remain;
                         Console.WriteLine("金額不足還貸");
                         Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
@@ -95,40 +101,20 @@ namespace F74111128_2_2
 
                     //buy
 
-                    for (int i = realownstock_num.Count - 1; i >= 0; i--)
-                    {
-                        int num = realownstock_num[i];
-                        profitday -= realownstock_num[i] * realownstock_price[i];
-                        
-                    }
 
                     //sell
-                    for (int i = sellownstock_num.Count - 1; i >= 0; i--)
-                    {
-                        for (int j = 0; j < stock_ids.Length; j++) {
-                            if (stock_ids[j] == sellownstock_tag[i]) {
-                                profitday += stock_price[j] * sellownstock_num[i];
-                            }
-                        }
-                        realownstock_num.RemoveAt(i);
-                        realownstock_price.RemoveAt(i);
-                        realownstock_tag.RemoveAt(i);
 
-                        
-                        sellownstock_num.RemoveAt(i);
-                        sellownstock_price.RemoveAt(i);
-                        sellownstock_tag.RemoveAt(i);
-                    }
                     profitday = Math.Round(profitday, 2);
                     money = Math.Round(money, 2);
 
-                    Console.WriteLine("最後交割金額: {0}",profitday);
-                    remain=money+profitday;
-                    money=remain;
-                    if (remain< 0) {
+                    Console.WriteLine("最後交割金額: {0}", profitday);
+                    remain = money + profitday;
+                    money = remain;
+                    if (remain < 0)
+                    {
                         Console.WriteLine("金額不足交割");
-                        if(nomoney==0)
-                        Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
+                        if (nomoney == 0)
+                            Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
                         Environment.Exit(0);
                     }
                 }
@@ -136,7 +122,7 @@ namespace F74111128_2_2
 
                 Console.WriteLine("歡迎來到NCKU證券交易系統!");
                 Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                Console.WriteLine("Day: {0}                  |         Money: {1}", day,money);
+                Console.WriteLine("Day: {0}                  |         Money: {1}", day, money);
                 Console.WriteLine("(1)買股");
                 Console.WriteLine("(2)賣股");
                 Console.WriteLine("(3)股市走勢");
@@ -208,19 +194,17 @@ namespace F74111128_2_2
                                     Console.WriteLine("輸入錯誤，請輸入正確的格式");
                                     continue;
                                 }
-                                    double total = buy * buyprice;
-                                    total = Math.Round(total, 2);
-                                    Console.WriteLine("成功買入 {0} 共 {1}股, 交割金額 {2}", tag, buy, total);
+                                double total = buy * buyprice;
+                                total = Math.Round(total, 2);
+                                Console.WriteLine("成功買入 {0} 共 {1}股, 交割金額 {2}", tag, buy, total);
+                                profitday -= total;
                                 if (History.Count == 5)
                                 {
                                     History.RemoveAt(0);
                                     Historyname.RemoveAt(0);
                                 }
                                 History.Add("+");
-                                    Historyname.Add(buynames);
-                                    ownstock_num.Add(buy);
-                                    ownstock_price.Add(buyprice);
-                                    ownstock_tag.Add(tag);
+                                Historyname.Add(buynames);
                                 realownstock_num.Add(buy);
                                 realownstock_price.Add(buyprice);
                                 realownstock_tag.Add(tag);
@@ -243,12 +227,18 @@ namespace F74111128_2_2
                             {
                                 if (realownstock_num.Count == 0)
                                     Console.WriteLine("無持有任何股票");
-                                else {
+                                else
+                                {
                                     Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                                     Console.WriteLine("\n持有股票");
+                                    string realownstockname = "";
                                     for (int i = 0; i < realownstock_price.Count; i++)
                                     {
-                                        string realownstockname = stock_names[i];
+                                        for (int j = 0; j < stock_ids.Length; j++) {
+                                            if (stock_ids[j] == realownstock_tag[i]) {
+                                                realownstockname = stock_names[j];
+                                            }
+                                        }
                                         Console.WriteLine("- {0}({1}): {2} 共 {3} 股", realownstockname, realownstock_tag[i], realownstock_price[i], realownstock_num[i]);
                                     }
                                 }
@@ -276,25 +266,31 @@ namespace F74111128_2_2
                                         sellprice = stock_price[i];
                                     }
                                 }
-
-                                for (int i = 0; i < realownstock_price.Count; i++)
+                                double total = 0;
+                                int totalsell = 0;
+                                for (int i = realownstock_price.Count - 1; i >= 0; i--)
                                 {
                                     if (realownstock_tag[i] == selltag)
                                     {
-                                        double total = realownstock_num[i] * realownstock_price[i];
-                                        total = Math.Round(total, 2);
-                                        Console.WriteLine("賣出 {0} 共 {1} 股, 交割金額 {2}", sellname, realownstock_num[i],total);
-                                        if (History.Count == 5) {
+                                        total += realownstock_num[i] * sellprice;
+                                        totalsell += realownstock_num[i];
+                                        profitday += sellprice * realownstock_num[i];
+
+                                        if (History.Count == 5)
+                                        {
                                             History.RemoveAt(0);
                                             Historyname.RemoveAt(0);
                                         }
                                         History.Add("-");
                                         Historyname.Add(sellname);
-                                        sellownstock_tag.Add(realownstock_tag[i]);
-                                        sellownstock_num.Add(realownstock_num[i]);
-                                        sellownstock_price.Add(realownstock_price[i]);
+
+                                        realownstock_num.RemoveAt(i);
+                                        realownstock_price.RemoveAt(i);
+                                        realownstock_tag.RemoveAt(i);
                                     }
                                 }
+
+                                Console.WriteLine("賣出 {0} 共 {1} 股, 交割金額 {2}", sellname, totalsell, total);
                                 break;
                             }
                             else
@@ -307,7 +303,8 @@ namespace F74111128_2_2
                     case 3:
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         Console.WriteLine("大盤走勢 : ");
-                        for (int i = 0; i <3; i++) {
+                        for (int i = 0; i < 3; i++)
+                        {
                             if (diffHistory[0] > 0)
                             {
                                 if (i != 2)
@@ -315,7 +312,8 @@ namespace F74111128_2_2
                                 else
                                     Console.WriteLine("+{0}", diffHistory[i]);
                             }
-                            else {
+                            else
+                            {
                                 if (i != 2)
                                     Console.Write("{0}, ", diffHistory[i]);
                                 else
@@ -327,7 +325,8 @@ namespace F74111128_2_2
                     case 4:
 
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                        for (int i = 0; i < History.Count; i++) {
+                        for (int i = 0; i < History.Count; i++)
+                        {
                             Console.WriteLine("{0} {1}", History[i], Historyname[i]);
                         }
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -343,14 +342,16 @@ namespace F74111128_2_2
                             }
                             if (borrow <= 3000)
                             {
-                                Console.WriteLine("成功貸出 : {0}",borrow);
+                                Console.WriteLine("成功貸出 : {0}", borrow);
                                 money += borrow;
                             }
-                            else if (borrow > 3000) {
+                            else if (borrow > 3000)
+                            {
                                 Console.WriteLine("銀行不想借妳這麼多 >-<");
                             }
                         }
-                        else {
+                        else
+                        {
                             Console.WriteLine("貸款配額還剩0, 每天還本金 20%, 天利率為10%");
                             Console.Write("請輸入希望貸款的金額 : ");
                             if (!int.TryParse(Console.ReadLine(), out borrow))
@@ -362,7 +363,7 @@ namespace F74111128_2_2
                         topay = borrow;
                         break;
                     case 6:
-                        Console.WriteLine("破產囉QQ, 最後金額為 {0}",money);
+                        Console.WriteLine("破產囉QQ, 最後金額為 {0}", money);
                         exit = 1;
                         break;
                     case -1:
