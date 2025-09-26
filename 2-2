@@ -87,9 +87,13 @@ namespace F74111128_2_2
                         topay *= 0.8;
                         money = remain;
                         Console.WriteLine("貸款還了 {0}, 利息 {1}, 尚餘 {2}", truepay, extra, topay);
+                        if(topay>0)
+                        cantborrow = 1;
+                        else
+                            cantborrow = 0;
                     }
                     else
-                    {
+                    {   
                         money = remain;
                         Console.WriteLine("金額不足還貸");
                         Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
@@ -349,6 +353,7 @@ namespace F74111128_2_2
                                     Console.WriteLine("成功貸出 : {0}", borrow);
                                     money += borrow;
                                     topay = borrow;
+                                    cantborrow = 1;
                                     break;
                                 }
                                 else if (borrow > 3000)
@@ -356,9 +361,10 @@ namespace F74111128_2_2
                                     Console.WriteLine("銀行不想借妳這麼多 >-<");
                                     break;
                                 }
+                                
                             }
                             else
-                            {
+                            {   Console.WriteLine("請先還完貸款");
                                 Console.WriteLine("貸款配額還剩0, 每天還本金 20%, 天利率為10%");
                                 Console.Write("請輸入希望貸款的金額 : ");
                                 if (!int.TryParse(Console.ReadLine(), out borrow))
