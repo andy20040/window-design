@@ -1,0 +1,403 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace F74111128_2_2
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            double money = 3000;
+            int time = 0, exit = 0, day = 1, prevday = 0,changeday=0,cantborrow=0;
+            int stock_num = 3, borrow = 0,nomoney=0;
+            double extra = 0;
+            string[] stock_names = { "台肌電", "肯德基", "我熱烈的吻" };
+            double[] stock_price = { 1180, 144.58, 2 };
+            double prevtotalprice = 0;
+            double totalprice = 0;
+            double topay = 0;
+            double profitday = 0;
+            List<string> History = new List<string>();
+            List<string> Historyname = new List<string>();
+            List<double> diffHistory = new List<double>();
+            List<double> ownstock_price = new List<double>();
+            List<int> ownstock_num = new List<int>();
+            List<int> ownstock_tag = new List<int>();
+            List<double> realownstock_price = new List<double>();
+            List<int> realownstock_num = new List<int>();
+            List<int> realownstock_tag = new List<int>();
+            List<double> sellownstock_price = new List<double>();
+            List<int> sellownstock_num = new List<int>();
+            List<int> sellownstock_tag = new List<int>();
+            int[] stock_ids = { 2330, 47, 58 };
+            int[] stock_held = { 0, 0, 0 };
+            double[] stock_dividents = { 0.01, 0.05, 0.50 };
+            Random rand = new Random();
+
+            for (int i = 0; i < 3; i++)
+            {
+                time++;
+                day = time / 3;
+                for (int j = 0; j < stock_price.Length; j++)
+                {
+                    double change = stock_price[j] * 0.1;
+                    double randChange = -change + rand.NextDouble() * (2 * change);
+                    stock_price[j] += randChange;
+                    stock_price[j] = Math.Round(stock_price[j], 2);
+                    if (stock_price[j] < 0) stock_price[j] = 0.01; //in case <0
+                }
+            }
+            diffHistory.Add(0);
+            diffHistory.Add(0);
+            diffHistory.Add(0);
+            while (true)
+            {
+                changeday = 0;
+                prevday = day;
+                time += 1;
+                day = time / 3;
+                if (day > prevday)
+                    changeday = 1;
+                if (changeday==1) {
+                        Console.WriteLine("------------------------------國際換日線---------------------------------");
+                        double pay = 0;
+                    for (int i = 0; i < stock_ids.Length; i++) {
+                        for (int j = 0; j < realownstock_tag.Count; j++) {
+                            if (realownstock_tag[j] == stock_ids[i]) {
+                                pay+=realownstock_num[j] * realownstock_price[j] * stock_dividents[i];
+                            }
+                        }
+                    
+                    }
+                    pay= Math.Round(pay,2);
+                    Console.WriteLine("收到股息金額: {0}", pay);
+                    extra = topay* 0.1;
+                    double remain = 0,truepay=topay*0.2;
+                    remain= money - extra - topay * 0.2;
+                    if (remain >= 0) {
+                        topay *= 0.8;
+                        money = remain;
+                        Console.WriteLine("貸款還了 {0}, 利息 {1}, 尚餘 {2}", truepay, extra,topay);
+                    }
+                    else {
+                        money = remain;
+                        Console.WriteLine("金額不足還貸");
+                        Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
+                        nomoney = 1;
+                        exit = 1;
+                    }
+
+
+
+                    //buy
+
+                    for (int i = realownstock_num.Count - 1; i >= 0; i--)
+                    {
+                        int num = realownstock_num[i];
+                        profitday -= realownstock_num[i] * realownstock_price[i];
+                        
+                    }
+
+                    //sell
+                    for (int i = sellownstock_num.Count - 1; i >= 0; i--)
+                    {
+                        for (int j = 0; j < stock_ids.Length; j++) {
+                            if (stock_ids[j] == sellownstock_tag[i]) {
+                                profitday += stock_price[j] * sellownstock_num[i];
+                            }
+                        }
+                        realownstock_num.RemoveAt(i);
+                        realownstock_price.RemoveAt(i);
+                        realownstock_tag.RemoveAt(i);
+
+                        
+                        sellownstock_num.RemoveAt(i);
+                        sellownstock_price.RemoveAt(i);
+                        sellownstock_tag.RemoveAt(i);
+                    }
+                    profitday = Math.Round(profitday, 2);
+                    money = Math.Round(money, 2);
+
+                    Console.WriteLine("最後交割金額: {0}",profitday);
+                    remain=money+profitday;
+                    money=remain;
+                    if (remain< 0) {
+                        Console.WriteLine("金額不足交割");
+                        if(nomoney==0)
+                        Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
+                        Environment.Exit(0);
+                    }
+                }
+
+
+                Console.WriteLine("歡迎來到NCKU證券交易系統!");
+                Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                Console.WriteLine("Day: {0}                  |         Money: {1}", day,money);
+                Console.WriteLine("(1)買股");
+                Console.WriteLine("(2)賣股");
+                Console.WriteLine("(3)股市走勢");
+                Console.WriteLine("(4)歷史交易");
+                Console.WriteLine("(5)貸款");
+                Console.WriteLine("輸入1~5以外字元以退出, 6直接破產");
+                Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                Console.Write("輸入您的操作: ");
+                if (!int.TryParse(Console.ReadLine(), out int options))
+                {
+                    Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                    options = -1;
+                }
+                Console.WriteLine();
+                //int options = int.Parse(Console.ReadLine());
+                switch (options)
+                {
+                    case 1:
+                        Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        Console.WriteLine("完整股市:");
+                        Console.WriteLine("-台肌電(2330): {0}", stock_price[0]);
+                        Console.WriteLine("-肯德基(47): {0}", stock_price[1]);
+                        Console.WriteLine("-我熱烈的吻(58): {0}", stock_price[2]);
+                        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        while (true)
+                        {
+                            Console.Write("輸入希望購買的股票代號: ");
+                            if (!int.TryParse(Console.ReadLine(), out int tag))
+                            {
+                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                tag = 0;
+                                continue;
+                            }
+                            //int tag = int.Parse(Console.ReadLine());
+                            if (tag == -1)
+                            {
+                                break;
+                            }
+                            else if (tag < 0)
+                            {
+                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                continue;
+                            }
+                            double buyprice = 0;
+                            string buynames = "";
+                            if (stock_ids.Contains(tag))
+                            {
+                                for (int i = 0; i < stock_ids.Length; i++)
+                                {
+                                    if (stock_ids[i] == tag)
+                                    {
+                                        buyprice = stock_price[i];
+                                        buynames = stock_names[i];
+                                    }
+                                }
+                                Console.Write("輸入希望購買的股數: ");
+                                if (!int.TryParse(Console.ReadLine(), out int buy))
+                                {
+                                    Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                    continue;
+                                }
+                                //int buy=int.Parse(Console.ReadLine());
+                                if (buy == -1)
+                                {
+                                    break;
+                                }
+                                else if (buy < 0)
+                                {
+                                    Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                    continue;
+                                }
+                                    double total = buy * buyprice;
+                                    total = Math.Round(total, 2);
+                                    Console.WriteLine("成功買入 {0} 共 {1}股, 交割金額 {2}", tag, buy, total);
+                                if (History.Count == 5)
+                                {
+                                    History.RemoveAt(0);
+                                    Historyname.RemoveAt(0);
+                                }
+                                History.Add("+");
+                                    Historyname.Add(buynames);
+                                    ownstock_num.Add(buy);
+                                    ownstock_price.Add(buyprice);
+                                    ownstock_tag.Add(tag);
+                                realownstock_num.Add(buy);
+                                realownstock_price.Add(buyprice);
+                                realownstock_tag.Add(tag);
+
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("未知代碼!請重新輸入或是 -1 回到主頁");
+
+                            }
+
+                        }
+                        break;
+                    case 2:
+                        int begin = 1;
+                        while (true)
+                        {
+                            if (begin == 1)
+                            {
+                                if (realownstock_num.Count == 0)
+                                    Console.WriteLine("無持有任何股票");
+                                else {
+                                    Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                                    Console.WriteLine("\n持有股票");
+                                    for (int i = 0; i < realownstock_price.Count; i++)
+                                    {
+                                        string realownstockname = stock_names[i];
+                                        Console.WriteLine("- {0}({1}): {2} 共 {3} 股", realownstockname, realownstock_tag[i], realownstock_price[i], realownstock_num[i]);
+                                    }
+                                }
+                                begin = 0;
+                                Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                            }
+                            Console.Write("輸入希望(全部)售出的股票代號 : ");
+                            if (!int.TryParse(Console.ReadLine(), out int selltag))
+                            {
+                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                            }
+                            string sellname = "";
+                            double sellprice = 0;
+                            if (selltag == -1)
+                            {
+                                break;
+                            }
+                            if (realownstock_tag.Contains(selltag))
+                            {
+                                for (int i = 0; i < stock_ids.Length; i++)
+                                {
+                                    if (stock_ids[i] == selltag)
+                                    {
+                                        sellname = stock_names[i];
+                                        sellprice = stock_price[i];
+                                    }
+                                }
+
+                                for (int i = 0; i < realownstock_price.Count; i++)
+                                {
+                                    if (realownstock_tag[i] == selltag)
+                                    {
+                                        double total = realownstock_num[i] * realownstock_price[i];
+                                        total = Math.Round(total, 2);
+                                        Console.WriteLine("賣出 {0} 共 {1} 股, 交割金額 {2}", sellname, realownstock_num[i],total);
+                                        if (History.Count == 5) {
+                                            History.RemoveAt(0);
+                                            Historyname.RemoveAt(0);
+                                        }
+                                        History.Add("-");
+                                        Historyname.Add(sellname);
+                                        sellownstock_tag.Add(realownstock_tag[i]);
+                                        sellownstock_num.Add(realownstock_num[i]);
+                                        sellownstock_price.Add(realownstock_price[i]);
+                                    }
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("未知代碼!請重新輸入或是 -1 回到主頁");
+                            }
+                        }
+
+                        break;
+                    case 3:
+                        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        Console.WriteLine("大盤走勢 : ");
+                        for (int i = 0; i <3; i++) {
+                            if (diffHistory[0] > 0)
+                            {
+                                if (i != 2)
+                                    Console.Write("+{0}, ", diffHistory[i]);
+                                else
+                                    Console.WriteLine("+{0}", diffHistory[i]);
+                            }
+                            else {
+                                if (i != 2)
+                                    Console.Write("{0}, ", diffHistory[i]);
+                                else
+                                    Console.WriteLine("{0}", diffHistory[i]);
+                            }
+                        }
+                        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        break;
+                    case 4:
+
+                        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        for (int i = 0; i < History.Count; i++) {
+                            Console.WriteLine("{0} {1}", History[i], Historyname[i]);
+                        }
+                        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        break;
+                    case 5:
+                        if (cantborrow == 0)
+                        {
+                            Console.WriteLine("貸款配額還剩3000, 每天還本金 20%, 天利率為10%");
+                            Console.Write("請輸入希望貸款的金額 : ");
+                            if (!int.TryParse(Console.ReadLine(), out borrow))
+                            {
+                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                            }
+                            if (borrow <= 3000)
+                            {
+                                Console.WriteLine("成功貸出 : {0}",borrow);
+                                money += borrow;
+                            }
+                            else if (borrow > 3000) {
+                                Console.WriteLine("銀行不想借妳這麼多 >-<");
+                            }
+                        }
+                        else {
+                            Console.WriteLine("貸款配額還剩0, 每天還本金 20%, 天利率為10%");
+                            Console.Write("請輸入希望貸款的金額 : ");
+                            if (!int.TryParse(Console.ReadLine(), out borrow))
+                            {
+                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                            }
+                            Console.WriteLine("銀行不想借妳這麼多 >-<");
+                        }
+                        topay = borrow;
+                        break;
+                    case 6:
+                        Console.WriteLine("破產囉QQ, 最後金額為 {0}",money);
+                        exit = 1;
+                        break;
+                    case -1:
+                        break;
+                    default:
+                        exit = 1;
+                        break;
+                }
+
+                if (exit == 1)
+                {
+                    Console.WriteLine("已退出系統");
+                    break;
+                }
+                for (int j = 0; j < stock_price.Length; j++)
+                {
+                    double change = stock_price[j] * 0.1;
+                    double randChange = -change + rand.NextDouble() * (2 * change);
+                    stock_price[j] += randChange;
+                    stock_price[j] = Math.Round(stock_price[j], 2);
+                    if (stock_price[j] < 0) stock_price[j] = 0.01; //in case <0
+                }
+                prevtotalprice = totalprice;
+                totalprice = 0;
+                foreach (double price in stock_price)
+                {
+                    totalprice += price;
+                }
+                totalprice = Math.Round(totalprice, 2);
+                diffHistory.RemoveAt(0);
+                diffHistory.Add(Math.Round(totalprice - prevtotalprice, 2));
+
+            }
+
+
+        }
+    }
+}
