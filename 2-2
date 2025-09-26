@@ -234,8 +234,10 @@ namespace F74111128_2_2
                                     string realownstockname = "";
                                     for (int i = 0; i < realownstock_price.Count; i++)
                                     {
-                                        for (int j = 0; j < stock_ids.Length; j++) {
-                                            if (stock_ids[j] == realownstock_tag[i]) {
+                                        for (int j = 0; j < stock_ids.Length; j++)
+                                        {
+                                            if (stock_ids[j] == realownstock_tag[i])
+                                            {
                                                 realownstockname = stock_names[j];
                                             }
                                         }
@@ -332,35 +334,45 @@ namespace F74111128_2_2
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         break;
                     case 5:
-                        if (cantborrow == 0)
-                        {
-                            Console.WriteLine("貸款配額還剩3000, 每天還本金 20%, 天利率為10%");
-                            Console.Write("請輸入希望貸款的金額 : ");
-                            if (!int.TryParse(Console.ReadLine(), out borrow))
+                        while (true) {
+                            if (cantborrow == 0)
                             {
-                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                Console.WriteLine("貸款配額還剩3000, 每天還本金 20%, 天利率為10%");
+                                Console.Write("請輸入希望貸款的金額 : ");
+                                if (!int.TryParse(Console.ReadLine(), out borrow))
+                                {
+                                    Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                    continue;
+                                }
+                                if (borrow <= 3000)
+                                {
+                                    Console.WriteLine("成功貸出 : {0}", borrow);
+                                    money += borrow;
+                                    topay = borrow;
+                                    break;
+                                }
+                                else if (borrow > 3000)
+                                {
+                                    Console.WriteLine("銀行不想借妳這麼多 >-<");
+                                    break;
+                                }
                             }
-                            if (borrow <= 3000)
+                            else
                             {
-                                Console.WriteLine("成功貸出 : {0}", borrow);
-                                money += borrow;
-                            }
-                            else if (borrow > 3000)
-                            {
+                                Console.WriteLine("貸款配額還剩0, 每天還本金 20%, 天利率為10%");
+                                Console.Write("請輸入希望貸款的金額 : ");
+                                if (!int.TryParse(Console.ReadLine(), out borrow))
+                                {
+                                    Console.WriteLine("輸入錯誤，請輸入正確的格式");
+                                    continue;
+                                }
                                 Console.WriteLine("銀行不想借妳這麼多 >-<");
+                                break;
                             }
+                            topay = borrow;
+
                         }
-                        else
-                        {
-                            Console.WriteLine("貸款配額還剩0, 每天還本金 20%, 天利率為10%");
-                            Console.Write("請輸入希望貸款的金額 : ");
-                            if (!int.TryParse(Console.ReadLine(), out borrow))
-                            {
-                                Console.WriteLine("輸入錯誤，請輸入正確的格式");
-                            }
-                            Console.WriteLine("銀行不想借妳這麼多 >-<");
-                        }
-                        topay = borrow;
+
                         break;
                     case 6:
                         Console.WriteLine("破產囉QQ, 最後金額為 {0}", money);
