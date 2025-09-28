@@ -13,8 +13,8 @@ namespace F74111128_2_2
         {
             double money = 3000;
             int time = 0, exit = 0, day = 1, prevday = 0, changeday = 0, cantborrow = 0;
-            int stock_num = 3, borrow = 0, nomoney = 0,remainborrow=3000;
-            double extra = 0;
+            int stock_num = 3, nomoney = 0;
+            double extra = 0,borrow=0, remainborrow = 3000;
             string[] stock_names = { "台肌電", "肯德基", "我熱烈的吻" };
             double[] stock_price = { 1180, 144.58, 2 };
             double prevtotalprice = 0;
@@ -87,13 +87,13 @@ namespace F74111128_2_2
                         topay *= 0.8;
                         money = remain;
                         Console.WriteLine("貸款還了 {0}, 利息 {1}, 尚餘 {2}", truepay, extra, topay);
-                        if(topay>0)
-                        cantborrow = 1;
+                        if (topay > 0)
+                            cantborrow = 1;
                         else
                             cantborrow = 0;
                     }
                     else
-                    {   
+                    {
                         money = remain;
                         Console.WriteLine("金額不足還貸");
                         Console.WriteLine("破產囉QQ, 最後金額為 {0}", remain);
@@ -338,18 +338,19 @@ namespace F74111128_2_2
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         break;
                     case 5:
-                        while (true) {
+                        while (true)
+                        {
                             if (cantborrow == 0)
                             {
-                                Console.WriteLine("貸款配額還剩{0}, 每天還本金 20%, 天利率為10%",remainborrow);
+                                Console.WriteLine("貸款配額還剩{0}, 每天還本金 20%, 天利率為10%", remainborrow);
                                 Console.Write("請輸入希望貸款的金額 : ");
-                                if (!int.TryParse(Console.ReadLine(), out borrow))
+                                if (!double.TryParse(Console.ReadLine(), out borrow))
                                 {
                                     Console.WriteLine("輸入錯誤，請輸入正確的格式");
                                     continue;
                                 }
                                 if (borrow <= 3000)
-                                {   
+                                {
                                     Console.WriteLine("成功貸出 : {0}", borrow);
                                     remainborrow -= borrow;
                                     money += borrow;
@@ -362,11 +363,12 @@ namespace F74111128_2_2
                                     Console.WriteLine("銀行不想借妳這麼多 >-<");
                                     break;
                                 }
-                                
+
                             }
                             else
-                            {   Console.WriteLine("請先還完貸款");
-                                Console.WriteLine("貸款配額還剩{0}, 每天還本金 20%, 天利率為10%",remainborrow);
+                            {
+                                Console.WriteLine("請先還完貸款");
+                                Console.WriteLine("貸款配額還剩{0}, 每天還本金 20%, 天利率為10%", remainborrow);
                                 break;
                             }
                             topay = borrow;
